@@ -2,39 +2,81 @@ import string
 from collections import defaultdict
 from pprint import pprint
 
-# Dicionário para armazenar a contagem de palavras
-words = defaultdict(int)
+class WordCounter:
+    def __init__(self):
+        self.caracters_ignore = string.digits + string.punctuation
+        self.words = defaultdict(int)
 
-# Caracteres que devem ser ignorados
-caracters_ignore = string.digits + string.punctuation
+    def clean_text(self, text):
+    
+        #Remove os caracteres indesejados do texto.
+        
+        for c in self.caracters_ignore:
+            text = text.replace(c, ' ')
+        return text.lower()
 
-# Solicita o texto ao usuário
-text = input('Cole seu texto: ')
+    def count_words(self, text):
+        
+        #Conta a ocorrência de cada palavra no texto.
+        
+        self.words.clear()  # Limpa o dicionário para evitar dados antigos
+        word_list = text.split()
+        for word in word_list:
+            self.words[word] += 1
 
-# Remove caracteres indesejados do texto
-for c in caracters_ignore:
-    text = text.replace(c, ' ')
+    def get_sorted_words(self):
+        
+        #Retorna uma lista de palavras ordenadas pela frequência e pelo nome.
+        
+        return sorted(self.words.items(), key=lambda x: (x[1], x[0]))
 
-# Transforma todo o texto em minúsculas e separa em palavras
-word_list = text.lower().split()
+    def display_results(self):
+        
+        #Exibe o total de palavras e as palavras mais frequentes.
+        
+        total = sum(self.words.values())
+        sorted_words = self.get_sorted_words()
 
-# Conta as palavras
-for word in word_list:
-    words[word] += 1
+        print(f'Total de palavras: {total}\n\nPalavras mais frequentes:\n')
+        print(40*'-')
 
-sorted_words = sorted(words.items(), key=lambda x: (x[1], x[0]))
+        for word, frequency in sorted_words:
+            if frequency >= 2:
+                print(f'{word}: {frequency}')
+        print(40*'-')
 
+class WordCounterApp:
+    def __init__(self):
+        self.word_counter = WordCounter()
 
-total = sum(words.values())
+    def run(self):
+        
+        #Método principal que controla o fluxo da aplicação.
+        
+        print('CONTADOR DE PALAVRAS\n')
 
-print(f'Total de palavras: {total}\n\nPalavras mais frequentes:\n')
+        while True:
+            # Solicita o texto ao usuário
+            text = input('Cole seu texto: ')
 
-# Exibe as palavras e suas contagens
+            # Limpa o texto e conta as palavras
+            clean_text = self.word_counter.clean_text(text)
+            self.word_counter.count_words(clean_text)
 
-print(40*'-')
-for word, frequency in sorted_words:
-    if frequency >= 2:
-        print(f'{word}: {frequency}')
-print(40*'-')
+            # Exibe os resultados
+            self.word_counter.display_results()
+
+            # Pergunta ao usuário se deseja continuar
+            stop = input('Deseja continuar?\nSim(digite "s" e aperte ENTER)\nNão(Pressione ENTER)\n')
+            if stop.lower() != 's':
+                break
+
+# Executa o aplicativo
+if __name__ == '__main__':
+    app = WordCounterApp()
+    app.run()
+
+    
+
 
 
